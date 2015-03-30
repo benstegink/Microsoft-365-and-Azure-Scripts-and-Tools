@@ -11,6 +11,7 @@ The Scipts are arranged in the following Manner:
 - Office 365: These are scripts related to the Suite of Office 365 Products.  It will tend to be SharePoint Online realated, but may also include AD, Lync, Exchange or any other technologies in the suite.
 - SharePoint: These are generic scripts that could be run against multiple versions of SharePoint.  SharePoint 2010 and 2013.  SharePoint 2013 and SharePoint vNext, SharePoint 2007, 2010 and 2013.  You get the idea.
 - SharePoint 2013: These are scripts written and verified specifically for SharePoint 2013.  It isn't saying they won't work for another version of SharePoint, I just haven't tested them.
+- Azure: Scripts related to Windows Azure that can be run within the Azure PowerShell.
 
 I've tried to name the scripts in a manner that is easy to understand and get the idea of what the script might do from the name.  I'll try to do a better job at docmenting the scripts as well.  I have a lot more coming, it's just a process of sorting through what I have currently in OneDrive, cleaning some of them up and getting them moved over to GitHub.  If you're looking for something specific, feel free to reach out.  I may have it, but just not moved it over to Github yet.
 
