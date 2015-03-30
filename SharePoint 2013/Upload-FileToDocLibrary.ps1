@@ -23,7 +23,8 @@
  Upload-FileToDocLibrary -filePath "C:\Folder\file.txt" -siteURL "http://intranet/subsite" -libraryName "Documents"
  
  .NOTES
- Author: Ben Stegink									   
+ Author: Ben Stegink
+ Last Modified By: Ben Stegink									   
  Date Created: Yesterday						   
  Last Modified: Today
    

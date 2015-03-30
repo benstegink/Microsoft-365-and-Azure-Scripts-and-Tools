@@ -13,23 +13,33 @@ Function ConvertCSV-ToExcel
 {
 <#  
  .SYNOPSIS 
-  Converts a CSV file to an Excel file
+  Converts a CSV file to an Excel (XLSX) file
    
  .DESCRIPTION 
-  Converts a CSV file to an Excel file
+  Converts a CSV file to an Excel (XLSX) file
     
  .PARAMETER inputfile
   Name of the CSV file being converted
  
  .PARAMETER output
-  Name of the converted excel file
+  Name of the converted excel file , including the file extension
+
+ .PARAMETER overwrite
+  Boolean value to specify if you want to overwrite the output file if a file already exixts.  If
+  true, any existing file with the same name will be overwrite.  If false, a prompt will be displayed
+  asking if you want to overwirte the existing file.  This is set to be false by default
     
  .EXAMPLE 
+  ConvertCSV-ToExcel -inputfile "C:\sample.csv" -output "C:\sample.csv"
+
+ .EXAMPLE
+  ConvertCSV-ToExcel -inputfile "C:\sample.csv" -output "C:\sample.csv" -overwrite $True
  
  .NOTES
- Author: Boe Prox									   
+ Original Author: Boe Prox
+ Last Modified By: Ben Stegink									   
  Date Created: 								   
- Last Modified: 
+ Last Modified: 2015-03-30
    
 #>
    
@@ -37,8 +47,9 @@ Function ConvertCSV-ToExcel
 [CmdletBinding()] 
 Param
   (  
-    [parameter(Mandatory=$False,Position=1)][string]$inputfile,  
-    [parameter(Mandatory=$False,Position=1)][string]$output
+    [parameter(Mandatory=$True,Position=1)][string]$inputfile,  
+    [parameter(Mandatory=$True,Position=1)][string]$output,
+    [parameter(Mandatory=$False)][Boolean]$overwrite = $False
             
   )
     
@@ -46,51 +57,21 @@ Param
 $excel = new-object -com excel.application
 
 #Show Excel application
-$excel.Visible = $True
+$excel.Visible = $False
+if($overwrite -eq $True){
+    $excel.DisplayAlerts = $False
+}
+else{
+    $excel.DisplayAlerts = $True
+}
 
 #Add workbook
-$workbook = $excel.workbooks.Add()
+$workbook = $excel.workbooks.open("$inputfile")
 
-#Use the first worksheet in the workbook
-$worksheet1 = $workbook.worksheets.Item(1)
-
-#Remove other worksheets that are not needed
-$workbook.worksheets.Item(2).delete()
-$workbook.worksheets.Item(2).delete()
-
-#Start row and column
-$r = 1
-$c = 1
-
-#Begin working through the CSV
-$file = (GC $inputfile)
-ForEach ($f in $file) {
-  $arr = ($f).split(',')
-  ForEach ($a in $arr) {
-    $worksheet1.Cells.Item($r,$c) = "$(($a).replace('"',))"
-    $c++
-    }
-  $c = 1
-  $r++    
-  }    
-
-#Select all used cells
-$range = $worksheet1.UsedRange
-
-#Autofit the columns
-$range.EntireColumn.Autofit() | out-null 
-
-#Save spreadsheet
-$workbook.saveas("$pwd\$output")
-
-Write-Host -Fore Green "File saved to $pwd\$output"
+#Save the Converted Workbook
+$workbook.saveas("$output",51)
 
 #Close Excel
 $excel.quit() 
 
-#Release processes for Excel
-$a = Release-Ref($range)
-$a = Release-Ref($worksheet1)
-$a = Release-Ref($workbook)
-$a = Release-Ref($range)
 }
