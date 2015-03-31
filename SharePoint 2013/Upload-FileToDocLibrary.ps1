@@ -52,6 +52,7 @@ Param
   $lib = $web.Lists[$libraryName]
 
   if($lib -eq $null){
+    $web.Dispose()
     return $False;
   }
   else{
@@ -69,9 +70,11 @@ Param
         #Add any additional metadata fields you want updated @'
         #$file["FieldName"] = "SomeValue"
         $file.Update()
+        $web.Dispose()
         return $True
     }
     else{
+        $web.Dispose()
         return $False
     }
   }
