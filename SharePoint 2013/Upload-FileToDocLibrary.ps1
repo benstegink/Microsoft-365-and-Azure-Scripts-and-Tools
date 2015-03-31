@@ -18,9 +18,15 @@
 
  .PARAMETER libraryName
   This is the name of the document libarary the file should be uplaoded to. i.e. Documents
+
+  .PARAMETER overwrite
+  If the filename already exists, do you want to overwrite the existing file with the new one.  Defaulted to False
     
  .EXAMPLE 
  Upload-FileToDocLibrary -filePath "C:\Folder\file.txt" -siteURL "http://intranet/subsite" -libraryName "Documents"
+
+ .EXAMPLE
+ Upload-FileToDocLibrary -filePath "C:\Folder\file.txt" -siteURL "http://intranet/subsite" -libraryName "Documents" -overwrite $True
  
  .NOTES
  Author: Ben Stegink
@@ -35,7 +41,8 @@ Param
   (  
     [parameter(Mandatory=$True,Position=1)][string]$filePath,  
     [parameter(Mandatory=$False,Position=1)][string]$siteUrl,
-    [parameter(Mandatory=$True,Position=1)][string]$libraryName
+    [parameter(Mandatory=$True,Position=1)][string]$libraryName,
+    [parameter(Mandatory=$False)][Boolean]$overwrite = $False
             
   )
   
@@ -55,7 +62,13 @@ Param
         $strLength = $filePath.Length - $filePath.LastIndexOf("\")
         $strLength = $strLength - 1
         $fileName =  $filePath.Substring($filePath.LastIndexOf("\")+1,$strLength)
-        $folder.Files.Add($fileName,$stream)
+        $uploadedFile = $folder.Files.Add($fileName,$stream,$overwrite)
+        $id = $uploadedFile.UniqueId
+        $file = $lib.Items | ? {$_.UniqueID -eq $id}
+        $file["Title"] = $fileName
+        #Add any additional metadata fields you want updated @'
+        #$file["FieldName"] = "SomeValue"
+        $file.Update()
         return $True
     }
     else{
