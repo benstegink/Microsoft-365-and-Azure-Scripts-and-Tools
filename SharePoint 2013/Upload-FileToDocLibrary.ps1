@@ -52,7 +52,10 @@ Param
         $file = Get-Item $filePath
         $stream = $file.OpenRead()
         $folder = $lib.RootFolder
-        $folder.Files.Add("",$stream)
+        $strLength = $filePath.Length - $filePath.LastIndexOf("\")
+        $strLength = $strLength - 1
+        $fileName =  $filePath.Substring($filePath.LastIndexOf("\")+1,$strLength)
+        $folder.Files.Add($fileName,$stream)
         return $True
     }
     else{
