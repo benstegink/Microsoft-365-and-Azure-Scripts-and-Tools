@@ -57,21 +57,21 @@ Param
   }
   else{
     if([System.IO.File]::Exists($filePath) -eq $True){
-        $file = Get-Item $filePath
-        $stream = $file.OpenRead()
-        $folder = $lib.RootFolder
-        $strLength = $filePath.Length - $filePath.LastIndexOf("\")
-        $strLength = $strLength - 1
-        $fileName =  $filePath.Substring($filePath.LastIndexOf("\")+1,$strLength)
-        $uploadedFile = $folder.Files.Add($fileName,$stream,$overwrite)
-        $id = $uploadedFile.UniqueId
-        $file = $lib.Items | ? {$_.UniqueID -eq $id}
-        $file["Title"] = $fileName
-        #Add any additional metadata fields you want updated @'
-        #$file["FieldName"] = "SomeValue"
-        $file.Update()
-        $web.Dispose()
-        return $True
+      $file = Get-Item $filePath
+      $file = [System.IO.File]::Open($filePath,'Open','Read','ReadWrite')
+      $folder = $lib.RootFolder
+      $strLength = $filePath.Length - $filePath.LastIndexOf("\")
+      $strLength = $strLength - 1
+      $fileName =  $filePath.Substring($filePath.LastIndexOf("\")+1,$strLength)
+      $uploadedFile = $folder.Files.Add($fileName,$file,$overwrite)
+      $id = $uploadedFile.UniqueId
+      $file = $lib.Items | ? {$_.UniqueID -eq $id}
+      $file["Title"] = $fileName
+      #Add any additional metadata fields you want updated @'
+      #$file["FieldName"] = "SomeValue"
+      $file.Update()
+      $web.Dispose()
+      return $True
     }
     else{
         $web.Dispose()
