@@ -26,7 +26,7 @@
 Param
   (  
     [parameter(Mandatory=$True,Position=1)][string]$inputparam,  
-    [parameter(Mandatory=$False,Position=1)][string]$input2param
+    [parameter(Mandatory=$False,Position=2)][string]$input2param
             
   )
 
