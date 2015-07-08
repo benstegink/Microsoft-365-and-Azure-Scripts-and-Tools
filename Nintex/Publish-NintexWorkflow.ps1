@@ -14,12 +14,13 @@ function Publish-NintexWorkflow($url,$listName,$WorkflowFile,$prePendLibrayName)
     $WorkflowNameLength = $WorkflowFile.LastIndexOf(".") - $WorkflowNameStart
     $WorkflowName = $WorkflowFile.Substring($WorkflowNameStart,$WorkflowNameLength)
     #Get the Workflow from file
-    $NWFcontent = get-content $WorkflowFile
+    [byte[]] $NWFByteFile = Get-Content -Encoding Byte -Path $WorkflowFile
+    Start-Sleep -Seconds 10
     #write-host "Workflow is being Published to: "$List
     if($prePendLibrayName -eq $true){
         $WorkflowName = ($List.EntityTypeName+"_"+$WorkflowName)
     }
-    $proxy.PublishFromNWFXml($NWFcontent, $listName ,$WorkflowName, $true)
+    $proxy.PublishFromNWF($NWFcontent, $listName ,$WorkflowName, $true)
     #write-host "Done!"
     $Web.Dispose()
 }
