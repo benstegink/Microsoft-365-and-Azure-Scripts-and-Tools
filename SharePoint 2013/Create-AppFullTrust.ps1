@@ -1,4 +1,4 @@
-function{}
+function Create-AppFullTrust{
 <#  
  .SYNOPSIS 
   Configures App Full Trust for running provider hosted apps on SharePoint 2013
