@@ -1,5 +1,5 @@
-# My PowerShell Functions
-
+#Script Source
+#http://get-spscripts.com/2010/08/check-size-of-sharepoint-2010-sites.html
 
 #***************Reporting Functions***************
 
