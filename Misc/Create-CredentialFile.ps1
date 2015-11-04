@@ -25,11 +25,11 @@ function Create-CredentialFile{
 #>
     [CmdletBinding()] 
     Param
-      (  
-        [parameter(Mandatory=$True,Position=1)][string]$domain,  
-        [parameter(Mandatory=$True,Position=2)][string]$username,
-        [parameter(Mandatory=$True,Position=3)][string]$fileLocation = "C:\",
-        [parameter(Mandatory=$False,Position=4)][string]$fileName
+      ( [parameter(Mandatory=$True,Position=1)][string]$type, 
+        [parameter(Mandatory=$False,Position=2)][string]$domain,  
+        [parameter(Mandatory=$True,Position=3)][string]$username,
+        [parameter(Mandatory=$True,Position=4)][string]$fileLocation = "C:\",
+        [parameter(Mandatory=$False,Position=5)][string]$fileName
                 
       )
     #STORED CREDENTIAL CODE
@@ -44,11 +44,23 @@ function Create-CredentialFile{
         Write-Host 'Credential file not found. Enter your password:' -ForegroundColor Red
         Read-Host -AsSecureString | ConvertFrom-SecureString | Out-File $CredsFile
         $password = get-content $CredsFile | convertto-securestring
-        $Cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $domain\$username,$password}
-    else 
-        {Write-Host 'Using your stored credential file' -ForegroundColor Green
+        if($type -eq "NTLM"){
+          $Cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $domain\$username,$password
+        }
+        if($type -eq "SQL"){
+          $Cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $username,$password  
+        }
+    }
+    else {
+        Write-Host 'Using your stored credential file' -ForegroundColor Green
         $password = get-content $CredsFile | convertto-securestring
-        $Cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $domain\$username,$password}
+        if($type -eq "NTLM"){
+          $Cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $domain\$username,$password
+        }
+        if($type -eq "SQL"){
+          $Cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $username,$password  
+        }
+    }
     sleep 2
     Write-Host 'Credential File Created'
 
