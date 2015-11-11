@@ -35,12 +35,8 @@
 #Get file to install
 [CmdletBinding()]
 Param(
-	[Parameter(Mandatory=$true,Position=1)]
-	[string]$filename
-)
-Param(
-  [Parmeter(Mandatory=$true,Position=1)]
-  [Boolean]$passive
+	[Parameter(Mandatory=$true,Position=1)][string]$filename,
+  [Parameter(Mandatory=$true,Position=2)][Boolean]$passive
 )
  
 
