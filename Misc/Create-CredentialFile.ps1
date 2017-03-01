@@ -25,16 +25,16 @@ function Create-CredentialFile{
 #>
     [CmdletBinding()] 
     Param
-      ( [parameter(Mandatory=$True,Position=1)][string]$type, 
-        [parameter(Mandatory=$False,Position=2)][string]$domain,  
-        [parameter(Mandatory=$True,Position=3)][string]$username,
-        [parameter(Mandatory=$True,Position=4)][string]$fileLocation = "C:\",
-        [parameter(Mandatory=$False,Position=5)][string]$fileName
+      ( [parameter(Mandatory=$True,Position=0)][ValidateSet('NTLM','SQL')][string]$type, 
+        [parameter(Mandatory=$False,Position=1)][string]$domain,  
+        [parameter(Mandatory=$True,Position=2)][string]$username,
+        [parameter(Mandatory=$False,Position=3)][string]$fileLocation = ([Environment]::GetFolderPath("Desktop")),
+        [parameter(Mandatory=$False,Position=4)][string]$fileName
                 
       )
     #STORED CREDENTIAL CODE
-    if($fileName -eq $Null){
-        $CredsFile = $fileLocation + "\" + $AdminName + "-PowershellCreds.txt"
+    if([string]::IsNullOrEmpty($fileName)){
+        $CredsFile = $fileLocation + "\" + $username + "-PowershellCreds.txt"
     }
     else{
         $CredsFile = $fileLocation + "\" + $fileName
@@ -44,6 +44,7 @@ function Create-CredentialFile{
         Write-Host 'Credential file not found. Enter your password:' -ForegroundColor Red
         Read-Host -AsSecureString | ConvertFrom-SecureString | Out-File $CredsFile
         $password = get-content $CredsFile | convertto-securestring
+        #create credential variable
         if($type -eq "NTLM"){
           $Cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $domain\$username,$password
         }
@@ -53,6 +54,7 @@ function Create-CredentialFile{
     }
     else {
         Write-Host 'Using your stored credential file' -ForegroundColor Green
+        #create credential variable from existing file
         $password = get-content $CredsFile | convertto-securestring
         if($type -eq "NTLM"){
           $Cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $domain\$username,$password
@@ -63,5 +65,5 @@ function Create-CredentialFile{
     }
     sleep 2
     Write-Host 'Credential File Created'
-
+    return $Cred
 }
