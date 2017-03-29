@@ -26,7 +26,7 @@ function Export-SPAlerts{
 [CmdletBinding()] 
 Param
   (  
-    [parameter(Mandatory=$True,Position=1)][string]$url  
+    [parameter(Mandatory=$True,Position=1)][string]$url,  
     [parameter(Mandatory=$False,Position=2)][string]$CSVFileName
             
   )
