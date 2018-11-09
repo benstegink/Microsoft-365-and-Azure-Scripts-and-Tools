@@ -24,9 +24,9 @@ $username = $UserCredential.UserName
 if($createTeam -eq "False"){
    
     $password = $UserCredential.GetNetworkCredential().Password
-    $client_id = "cd97af51-a97d-4043-bcce-ba5f14be751f";
-    $client_secret = "bJmGATykcMe0E14ePW8uhQR";
-    $tenant_id = "5fd74a3e-d57a-410e-8d7c-02c4df062234";
+    $client_id = "";
+    $client_secret = "";
+    $tenant_id = "";
     $resource = "https://graph.microsoft.com";
     # grant_type = password
     $authority = "https://login.microsoftonline.com/$tenant_id";
