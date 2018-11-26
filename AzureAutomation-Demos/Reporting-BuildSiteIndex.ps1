@@ -1,7 +1,7 @@
-$reportingCred = Get-AutomationPSCredential -Name 'Reporting'
-$sqlCred = Get-AutomationPSCredential -Name 'SQLUser'
-$tenantAdminUrl = "https://navuba-admin.sharepoint.com"
-$tenantRootUrl = "https://navuba.sharepoint.com/"
+$reportingCred = Get-AutomationPSCredential -Name 'PowerShellAdmin'
+$sqlCred = Get-AutomationPSCredential -Name 'SQLReporting'
+$tenantAdminUrl = "https://intelligink-admin.sharepoint.com"
+$tenantRootUrl = "https://intelligink.sharepoint.com/"
 
 Connect-PnPOnline -Url $tenantRootUrl -Credentials $reportingCred
 Connect-SPOService -Url $tenantAdminUrl -Credential $reportingCred
@@ -13,7 +13,7 @@ $con = New-Object System.Data.SQLClient.SqlConnection
 $SQLuser = $sqlCred.Username
 $SQLpwd = $sqlCred.GetNetworkCredential().Password
 
-$con.ConnectionString = "Server=tcp:collab365reporting.database.windows.net;Database=O365Reporting;User ID=$SQLuser;Password=$SQLpwd;Trusted_Connection=False;Encrypt=True;"
+$con.ConnectionString = "Server=tcp:intelliginkdemos.database.windows.net;Database=O365Reporting;User ID=$SQLuser;Password=$SQLpwd;Trusted_Connection=False;Encrypt=True;"
 $con.Open()
 $cmd = New-Object System.Data.SqlClient.SqlCommand
 $cmd.Connection = $con

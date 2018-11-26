@@ -1,7 +1,7 @@
-$reportingCred = Get-AutomationPSCredential -Name 'Reporting'
-$sqlCred = Get-AutomationPSCredential -Name 'SQLUser'
-$tenantAdminUrl = "https://navuba-admin.sharepoint.com"
-$tenantRootUrl = "https://navuba.sharepoint.com/"
+$reportingCred = Get-AutomationPSCredential -Name 'PowerShellAdmin'
+$sqlCred = Get-AutomationPSCredential -Name 'SQLReporting'
+$tenantAdminUrl = "https://intelligink-admin.sharepoint.com"
+$tenantRootUrl = "https://intelligink.sharepoint.com/"
 
 ##### Functions #####
 function Get-SPSiteCollectionSize([string]$StorageUnit,[decimal]$usageGB){
@@ -80,7 +80,7 @@ $con = New-Object System.Data.SQLClient.SqlConnection
 $SQLuser = $sqlCred.Username
 $SQLpwd = $sqlCred.GetNetworkCredential().Password
 
-$ConnectionString = "Server=tcp:collab365reporting.database.windows.net;Database=O365Reporting;User ID=$SQLuser;Password=$SQLpwd;Trusted_Connection=False;Encrypt=True;"
+$ConnectionString = "Server=tcp:intelliginkdemos.database.windows.net;Database=O365Reporting;User ID=$SQLuser;Password=$SQLpwd;Trusted_Connection=False;Encrypt=True;"
 $query = "select * from SiteIndex"
 $con = New-Object system.data.SqlClient.SQLConnection
 $con.ConnectionString = $ConnectionString
