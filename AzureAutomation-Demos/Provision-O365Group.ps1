@@ -42,12 +42,12 @@ else{
     $groupId = New-Team -DisplayName $groupDisplayName -Alias $groupAlias
 }
 
-while($group -eq $null){
-    $group = Get-UnifiedGroup -Identity $groupAlias -ErrorAction SilentlyContinue
+#while($group -eq $null){
+#    $group = Get-UnifiedGroup -Identity $groupAlias -ErrorAction SilentlyContinue
 
-    Start-Sleep -Seconds 60
-    Write-Output "Waiting for Group to Create"
-}
+#    Start-Sleep -Seconds 60
+#    Write-Output "Waiting for Group to Create"
+#}
 
 if($groupAccessType -eq "Private"){
     Set-UnifiedGroup -Identity $groupAlias -AccessType $groupAccessType
