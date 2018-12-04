@@ -26,10 +26,16 @@ $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri ht
 Import-Module (Import-PSSession -Session $Session -AllowClobber -DisableNameChecking) -Global
 
 $username = $UserCredential.UserName
+$secret = Get-AutomationVariable -Name 'ClientSecret'
 
 if($createTeam -eq "False"){
     Connect-PnPOnline -AppId db22d1ee-2d8f-4368-8b53-291cd317477b -AppSecret $secret -AADDomain 'intelligink.onmicrosoft.com'
-    New-PnPUnifiedGroup -DisplayName $groupDisplayName -Description $groupDisplayName -Owners $groupOnwer -MailNickname $groupAlias
+    If($friendlyAlias -eq ""){
+        New-PnPUnifiedGroup -DisplayName $groupDisplayName -Description $groupDisplayName -Owners $groupOnwer -MailNickname $groupAlias
+    }
+    else{
+        New-PnPUnifiedGroup -DisplayName $groupDisplayName -Description $groupDisplayName -Owners $groupOnwer -MailNickname $friendlyAlias
+    }
 }
 else{
     Connect-MicrosoftTeams -Credential $UserCredential
