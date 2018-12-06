@@ -21,7 +21,7 @@ Param(
     [String] $externalemail
 )
 
-$UserCredential = Get-AutomationPSCredential -Name 'Provisioning'
+$UserCredential = Get-AutomationPSCredential -Name 'PowerShellAdmin'
 $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential $UserCredential -Authentication Basic -AllowRedirection
 Import-Module (Import-PSSession -Session $Session -AllowClobber -DisableNameChecking) -Global
 
@@ -42,37 +42,37 @@ else{
     $groupId = New-Team -DisplayName $groupDisplayName -Alias $groupAlias
 }
 
-#while($group -eq $null){
-#    $group = Get-UnifiedGroup -Identity $groupAlias -ErrorAction SilentlyContinue
+while($group -eq $null){
+   $group = Get-PnPUnifiedGroup -Identity $groupDisplayName -ErrorAction SilentlyContinue
 
-#    Start-Sleep -Seconds 60
-#    Write-Output "Waiting for Group to Create"
-#}
-
-if($groupAccessType -eq "Private"){
-    Set-UnifiedGroup -Identity $groupAlias -AccessType $groupAccessType
+    Write-Output "Waiting for Group to Create"
+    Start-Sleep -Seconds 60
 }
 
-Add-UnifiedGroupLinks -Identity $groupAlias -Links $creator -LinkType Members
-Start-Sleep -Seconds 20
-Add-UnifiedGroupLinks -Identity $groupAlias -Links $creator -LinkType Owners
+if($groupAccessType -eq "Private"){
+    Set-UnifiedGroup -Identity $groupDisplayName -AccessType $groupAccessType
+}
 
-Add-UnifiedGroupLinks -Identity $groupAlias -Links $groupOwner -LinkType Members
+Add-UnifiedGroupLinks -Identity $groupDisplayName -Links $creator -LinkType Members
 Start-Sleep -Seconds 20
-Add-UnifiedGroupLinks -Identity $groupAlias -Links $groupOwner -LinkType Owners
-Remove-UnifiedGroupLinks -Identity $groupAlias -Links $username -LinkType Owners -Confirm:$false
-Remove-UnifiedGroupLinks -Identity $groupAlias -Links $username -LinkType Members -Confirm:$false
+Add-UnifiedGroupLinks -Identity $groupDisplayName -Links $creator -LinkType Owners
+
+Add-UnifiedGroupLinks -Identity $groupDisplayName -Links $groupOwner -LinkType Members
+Start-Sleep -Seconds 20
+Add-UnifiedGroupLinks -Identity $groupDisplayName -Links $groupOwner -LinkType Owners
+Remove-UnifiedGroupLinks -Identity $groupDisplayName -Links $username -LinkType Owners -Confirm:$false
+Remove-UnifiedGroupLinks -Identity $groupDisplayName -Links $username -LinkType Members -Confirm:$false
 
 if($groupSecondaryOwner -ne $null -and $groupSecondaryOwner -ne ""){
-    Add-UnifiedGroupLinks -Identity $groupAlias -Links $groupSecondaryOwner -LinkType Members
+    Add-UnifiedGroupLinks -Identity $groupDisplayName -Links $groupSecondaryOwner -LinkType Members
     Start-Sleep -Seconds 20
-    Add-UnifiedGroupLinks -Identity $groupAlias -Links $groupSecondaryOwner -LinkType Owners
+    Add-UnifiedGroupLinks -Identity $groupDisplayName -Links $groupSecondaryOwner -LinkType Owners
 }
 
 if($friendlyAlias -ne ""){
     $rec = Get-Recipient $friendlyAlias -ErrorAction SilentlyContinue
     if($rec -eq $null){
-        Set-UnifiedGroup -Identity $groupAlias -Alias $friendlyAlias
+        Set-UnifiedGroup -Identity $groupDisplayName -Alias $friendlyAlias
         $aptarEmail = ("smtp:" + $friendlyAlias + "@aptar.com")
         $aptarMSEmail = ("smtp:" + $friendlyAlias + "@aptar.onmicrosoft.com")
         $primarySMTP = ($friendlyAlias + "@aptar.onmicrosoft.com")
