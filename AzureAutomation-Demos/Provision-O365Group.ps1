@@ -28,18 +28,20 @@ Import-Module (Import-PSSession -Session $Session -AllowClobber -DisableNameChec
 $username = $UserCredential.UserName
 $secret = Get-AutomationVariable -Name 'ClientSecret'
 
+Connect-PnPOnline -AppId db22d1ee-2d8f-4368-8b53-291cd317477b -AppSecret $secret -AADDomain 'intelligink.onmicrosoft.com'
+
 if($createTeam -eq "False"){
     Connect-PnPOnline -AppId db22d1ee-2d8f-4368-8b53-291cd317477b -AppSecret $secret -AADDomain 'intelligink.onmicrosoft.com'
-    If($friendlyAlias -eq ""){
+    #If($friendlyAlias -eq ""){
         New-PnPUnifiedGroup -DisplayName $groupDisplayName -Description $groupDisplayName -Owners $groupOnwer -MailNickname $groupAlias
-    }
-    else{
-        New-PnPUnifiedGroup -DisplayName $groupDisplayName -Description $groupDisplayName -Owners $groupOnwer -MailNickname $friendlyAlias
-    }
+    #}
+    #else{
+    #    New-PnPUnifiedGroup -DisplayName $groupDisplayName -Description $groupDisplayName -Owners $groupOnwer -MailNickname $friendlyAlias
+    #}
 }
 else{
     Connect-MicrosoftTeams -Credential $UserCredential
-    $groupId = New-Team -DisplayName $groupDisplayName -Alias $groupAlias
+    $groupId = New-Team -DisplayName $groupDisplayName -MailNickname $groupAlias -Visibility $groupAccessType
 }
 
 while($group -eq $null){
@@ -73,11 +75,11 @@ if($friendlyAlias -ne ""){
     $rec = Get-Recipient $friendlyAlias -ErrorAction SilentlyContinue
     if($rec -eq $null){
         Set-UnifiedGroup -Identity $groupDisplayName -Alias $friendlyAlias
-        $aptarEmail = ("smtp:" + $friendlyAlias + "@aptar.com")
-        $aptarMSEmail = ("smtp:" + $friendlyAlias + "@aptar.onmicrosoft.com")
-        $primarySMTP = ($friendlyAlias + "@aptar.onmicrosoft.com")
-        Write-Output "New Email Addresses: $aptarEmail, $aptarMSEmail with the primary address of $primarySMTP"
-        Set-UnifiedGroup -Identity $groupDisplayName -EmailAddresses @{Add=$aptarEmail,$aptarMSEmail}
+        $intelliginkEmail = ("smtp:" + $friendlyAlias + "@intelligink.com")
+        $intelliginkMSEmail = ("smtp:" + $friendlyAlias + "@intelligink.onmicrosoft.com")
+        $primarySMTP = ($friendlyAlias + "@intelligink.onmicrosoft.com")
+        Write-Output "New Email Addresses: $intelliginkEmail, $intelliginkMSEmail with the primary address of $primarySMTP"
+        Set-UnifiedGroup -Identity $groupDisplayName -EmailAddresses @{Add=$intelliginkEmail,$intelliginkMSEmail}
         Set-UnifiedGroup -Identity $groupDisplayName -PrimarySmtpAddress $primarySMTP
     }
     else{

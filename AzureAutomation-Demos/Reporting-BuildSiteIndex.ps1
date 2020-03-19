@@ -1,7 +1,8 @@
 $reportingCred = Get-AutomationPSCredential -Name 'PowerShellAdmin'
 $sqlCred = Get-AutomationPSCredential -Name 'SQLReporting'
-$tenantAdminUrl = "https://intelligink-admin.sharepoint.com"
-$tenantRootUrl = "https://intelligink.sharepoint.com/"
+$SiteIndexDB = Get-AutomationVariable -Name 'Reporting_SiteIndexDB'
+$tenantAdminUrl = Get-AutomationVariable -Name 'Reporting_TenantAdminUrl'
+$tenantRootUrl = Get-AutomationVariable -Name 'Reporting_TenantRootUrl'
 
 Connect-PnPOnline -Url $tenantRootUrl -Credentials $reportingCred
 Connect-SPOService -Url $tenantAdminUrl -Credential $reportingCred
@@ -12,6 +13,7 @@ $con = New-Object System.Data.SQLClient.SqlConnection
 
 $SQLuser = $sqlCred.Username
 $SQLpwd = $sqlCred.GetNetworkCredential().Password
+
 
 $con.ConnectionString = "Server=tcp:intelliginkdemos.database.windows.net;Database=O365Reporting;User ID=$SQLuser;Password=$SQLpwd;Trusted_Connection=False;Encrypt=True;"
 $con.Open()
@@ -35,9 +37,9 @@ foreach($site in $sites){
             $guid = [guid]::NewGuid()
             $SiteID = $guid.Guid
             $SiteUrl = $web.Url
-            $cmd.CommandText = "if not exists (select * from SiteIndex where SiteUrl = '{1}' ) `
+            $cmd.CommandText = "if not exists (select * from $SiteIndexDB where SiteUrl = '{1}' ) `
             begin `
-            INSERT INTO SiteIndex (SiteID,SiteURL) VALUES('{0}','{1}') `
+            INSERT INTO $SiteIndexDB (SiteID,SiteURL) VALUES('{0}','{1}') `
             end" `
             -f $SiteID,$SiteURL
             $cmd.ExecuteNonQuery()

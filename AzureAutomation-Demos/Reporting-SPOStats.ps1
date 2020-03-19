@@ -1,7 +1,10 @@
 $reportingCred = Get-AutomationPSCredential -Name 'PowerShellAdmin'
 $sqlCred = Get-AutomationPSCredential -Name 'SQLReporting'
-$tenantAdminUrl = "https://intelligink-admin.sharepoint.com"
-$tenantRootUrl = "https://intelligink.sharepoint.com/"
+$tenantAdminUrl = Get-AutomationVariable -Name 'Reporting_TenantAdminUrl'
+$ListsDB = Get-AutomationVariable -Name 'Reporting_ListsDB'
+$SiteGrowthDB = Get-AutomationVariable -Name 'Reporting_SiteGrowthDB'
+$SiteIndexDB = Get-AutomationVariable -Name 'Reporting_SiteIndexDB'
+$SitesDB = Get-AutomationVariable -Name 'Reporting_SitesDB'
 
 ##### Functions #####
 function Get-SPSiteCollectionSize([string]$StorageUnit,[decimal]$usageGB){
@@ -32,14 +35,14 @@ function Get-ListInformation($siteUrl,$siteID){
             $Title = $list.Title
             [int]$ListItemCount = $list.ItemCount
             #Write-Output $lastModified $listId $siteID $Title $ListItemCount
-            $cmd.CommandText = "if exists (select * from Lists where SiteId = '{0}' AND ListId = '{1}') `
+            $cmd.CommandText = "if exists (select * from $ListsDB where SiteId = '{0}' AND ListId = '{1}') `
             begin `
-            update Lists Set ListTitle='{2}',ListItemCount='{3}',ListItemLastModified='{4}' `
+            update $ListsDB Set ListTitle='{2}',ListItemCount='{3}',ListItemLastModified='{4}' `
             where SiteId = '{0}' AND ListId = '{1}' `
             end `
             else `
             begin `
-            INSERT INTO Lists (SiteID,ListID,ListTitle,ListItemCount,ListItemLastModified) VALUES('{0}','{1}','{2}','{3}','{4}') `
+            INSERT INTO $ListsDB (SiteID,ListID,ListTitle,ListItemCount,ListItemLastModified) VALUES('{0}','{1}','{2}','{3}','{4}') `
             end" `
             -f $SiteID,$listId,$Title,$ListItemCount,$lastModified
             [void] $cmd.ExecuteNonQuery()
@@ -66,7 +69,7 @@ function Get-SiteCollectionStats($siteID,$siteUrl){
     Write-Output "Start"
     Write-Output $SiteID $date $storageSize $items $subwebCount
     Write-Output "Stop"
-    $cmd.CommandText = "INSERT INTO SiteGrowth (SiteId,UpdateDate,StorageSize,SiteItemCount,SubWebCount) VALUES('{0}','{1}','{2}','{3}','{4}')" `
+    $cmd.CommandText = "INSERT INTO $SiteGrowthDB (SiteId,UpdateDate,StorageSize,SiteItemCount,SubWebCount) VALUES('{0}','{1}','{2}','{3}','{4}')" `
     -f $SiteID,$date,$storageSize,$items,$subwebCount
     [void] $cmd.ExecuteNonQuery()
 }
@@ -81,7 +84,7 @@ $SQLuser = $sqlCred.Username
 $SQLpwd = $sqlCred.GetNetworkCredential().Password
 
 $ConnectionString = "Server=tcp:intelliginkdemos.database.windows.net;Database=O365Reporting;User ID=$SQLuser;Password=$SQLpwd;Trusted_Connection=False;Encrypt=True;"
-$query = "select * from SiteIndex"
+$query = "select * from $SiteIndexDB"
 $con = New-Object system.data.SqlClient.SQLConnection
 $con.ConnectionString = $ConnectionString
 $con.Open()
@@ -120,14 +123,14 @@ foreach($item in $sites){
     $Sitetitle = $web.Title
     $lastitemmodifed = $web.LastItemUserModifiedDate
     $dateCreated = $web.Created
-    $cmd.CommandText = "if exists (select * from Sites where SiteId = '{0}' ) `
+    $cmd.CommandText = "if exists (select * from $SitesDB where SiteId = '{0}' ) `
         begin `
-        update Sites Set SiteUrl='{1}',SiteTitle='{2}',LastItemModified='{3}',SiteCollection='{5}' `
+        update $SitesDB Set SiteUrl='{1}',SiteTitle='{2}',LastItemModified='{3}',SiteCollection='{5}' `
         where SiteId = '{0}' `
         end `
         else `
         begin `
-        INSERT INTO Sites (SiteID,SiteURL,SiteTitle,LastItemModified,DateAdded,SiteCollection) VALUES('{0}','{1}','{2}','{3}','{4}','{5}') `
+        INSERT INTO $SitesDB (SiteID,SiteURL,SiteTitle,LastItemModified,DateAdded,SiteCollection) VALUES('{0}','{1}','{2}','{3}','{4}','{5}') `
         end" `
         -f $SiteID,$SiteURL,$siteTitle,$lastitemmodifed,$dateCreated,$SiteCollection
     $cmd.ExecuteNonQuery()

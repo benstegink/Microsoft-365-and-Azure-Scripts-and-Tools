@@ -5,18 +5,18 @@ Param(
     [String] $usageLocation = "US"
 )
 
-$accountSKUID = "navuba:ENTERPRISEPACK"
-$cred = Get-AutomationPSCredential -Name 'Provisioning'
+$accountSKUID = "intelligink:ENTERPRISEPACK"
+$cred = Get-AutomationPSCredential -Name 'PowerShellAdmin'
 Connect-AzureAD -Credential $cred
-$cred = Get-AutomationPSCredential -Name 'Provisioning'
-Connect-PnPOnline -Url https://navuba.sharepoint.com -Credentials $cred
+$cred = Get-AutomationPSCredential -Name 'PowerShellAdmin'
+Connect-PnPOnline -Url https://intelligink.sharepoint.com -Credentials $cred
 $filter = "UserPrincipalName eq '$username'"
 
 #Assign Licenses to all users
 #foreach($user in $users){
     $o365user = Get-AzureADUser -All $true -Filter $filter -ErrorAction SilentlyContinue
     if($o365user -ne $null){
-        Connect-PnPOnline -Url https://navuba.sharepoint.com -Credentials $cred
+        Connect-PnPOnline -Url https://intelligink.sharepoint.com -Credentials $cred
         if($o365user.AccountEnabled -eq $false)
         {
             Write-Output "Signin Not Allowed for" $username
@@ -51,7 +51,7 @@ $filter = "UserPrincipalName eq '$username'"
                 $license = Get-AzureADUserLicenseDetail -ObjectId $o365user.ObjectId | ? {$_.SkuPartNumber -eq $sku.SkuPartNumber}
                 #Exchange
                 $exchStatus = $license.ServicePlans | ? {$_.ServicePlanName -eq "EXCHANGE_S_ENTERPRISE"}
-                if($exchStatus.ProvisioningStatus -ne "Success"){
+                if($excningShStatus.Provisiotatus -ne "Success"){
                  $E3.DisabledPlans += ($sku.ServicePlans | ?{$_.ServicePlanName -eq "EXCHANGE_S_ENTERPRISE"}).ServicePlanID
                 }
                 #Skype For Biz
@@ -75,16 +75,16 @@ $filter = "UserPrincipalName eq '$username'"
             $license = $null
             $license = $o365user.AssignedLicenses | ? {$_.SkuId -eq $Sku.SkuId}
             if($license -ne $null){
-                $personalURL = (Get-PnPUserProfileProperty -Account $username).PersonalUrl
-                if($personalURL -match "Person.aspx"){
-                    $cred = Get-AutomationPSCredential -Name 'Provisioning'
-                    Connect-SPOService -Url https://navuba-admin.sharepoint.com -Credential $cred
-                    Request-SPOPersonalSite -UserEmails $username -NoWait
-                    Write-Output "Provisioning OneDrive for Business..."
-                }
-                else{
-                    Write-Output "OneDrive has already been provisioned for $username"
-                }        
+            #    $personalURL = (Get-PnPUserProfileProperty -Account $username).PersonalUrl
+            #    if($personalURL -match "Person.aspx"){
+            #        $cred = Get-AutomationPSCredential -Name 'Provisioning'
+            #        Connect-SPOService -Url https://navuba-admin.sharepoint.com -Credential $cred
+            #        Request-SPOPersonalSite -UserEmails $username -NoWait
+            #        Write-Output "Provisioning OneDrive for Business..."
+            #    }
+            #    else{
+            #        Write-Output "OneDrive has already been provisioned for $username"
+            #    }        
             }
             else{
                 Write-Output "There was an error assigning licenses for $username"
