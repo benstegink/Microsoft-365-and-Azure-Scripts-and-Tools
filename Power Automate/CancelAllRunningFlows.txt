@@ -1,0 +1,23 @@
+1. Open up the flow history list
+2. Open up the developer tools and go to the console
+3. Run the script below
+4. Switch the view to the running flows
+
+var jq = document.createElement('script');
+jq.src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js";
+document.getElementsByTagName('head')[0].appendChild(jq);
+
+// ... give time for script to load, then type (or see below for non wait option)
+
+
+jQuery.noConflict()
+
+// ... if you get an error, run the above again
+
+confirm = function () {return true;};
+setInterval(function () {
+$(".fl-StatusInCell:contains('Running')").parent().parent().find('.ms-DetailsRow-cell').first().click();
+$(".fl-StatusInCell:contains('Running')").parent().parent().find('.ms-DetailsRow-cell').last().click();
+$(".fl-StatusInCell:contains('Running')").parent().parent().find('.ms-DetailsRow-cell').first().click();
+$('button[name="Cancel"]').click();
+},5000);
