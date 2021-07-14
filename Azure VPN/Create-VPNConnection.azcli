@@ -1,0 +1,14 @@
+az network vnet create -g 'Production' -n 'prod-primary'
+az network vnet subnet create -g 'Production' -n 'prod-subnet-main' --vnet-name 'prod-primary' --address-prefixes 10.0.0.0/24
+az network vnet subnet create -g 'Intelligink' -n 'p2s-subnet-vpngateway' --vnet-name 'intelligink' --address-prefixes 10.0.250.200/29
+
+az network vnet subnet list -o table -g 'Intelligink' --vnet-name 'intelligink'
+
+az network public-ip create -g 'Intelligink' -n 'p2s-vpn-pip' --allocation-method Dynamic
+az network vnet-gateway create -g 'Intelligink' -n 'p2s-vpn-gateway' --public-ip-address 'p2s-vpn-pip' --vnet 'intelligink' --gateway-type Vpn --sku VpnGw1 --vpn-type RouteBased
+
+az network vnet-gateway show -g 'Intelligink' -n 'p2s-vpn-gateway' -o table
+
+
+#this shoudl work to configure the gateway address pool, but throws and error about bgp
+az network vnet-gateway update -g 'Intelligink' -n 'p2s-vpn-gateway' --address-prefixes 172.16.100.0/26 --client-protocol IkeV2
